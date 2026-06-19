@@ -4,7 +4,7 @@ import random
 from discord.ext import commands
 load_dotenv(".env")
 botToken = os.getenv('TOKEN')
-bot = commands.Bot(os.getenv("PREFIX"),intents=discord.Intents.all())
+bot = commands.Bot(command_prefix=os.getenv("PREFIX"), intents=discord.Intents.all())
 @bot.event
 async def on_ready():
     print(f"{bot.user} has woke up from the multibot grave!")
@@ -13,7 +13,7 @@ async def ping(ctx):
     await ctx.send(f"Ping: {int(round(bot.latency*1000,0))}ms")
 @bot.command(name="random",description="Chooses a random from a range")
 async def ran(ctx, first:int, last:int):
-    await ctx.send(f"From {first} to {last}, I choose {ran.randint(first,last)}!")
+    await ctx.send(f"From {first} to {last}, I choose {random.randint(first,last)}!") # another fix
 @bot.command(name="download",description="Downloads a video from YouTube/Instagram/Twitter/TikTok")
 async def download(ctx, url):
     path = await pybalt.download(url, videoQuality='480')
