@@ -10,7 +10,7 @@ from discord.ext import commands
 load_dotenv(".env")
 botToken = os.getenv("TOKEN")
 botPrefix = os.getenv("PREFIX")
-botStatusType = os.getenv("STATUS_TYPE").lower()
+botStatusType = os.getenv("STATUS_TYPE", "playing").lower()
 botStatusName = os.getenv("STATUS_NAME")
 botStatusURL = os.getenv("STATUS_URL")
 bot = commands.Bot(command_prefix=botPrefix,intents=discord.Intents.all())
