@@ -5,6 +5,10 @@ import discord, os, pybalt, yaml, aiofiles, base64
 import random
 from discord.ext import commands
 
+# Specified list for working websites using pybalt
+
+pybaltURLs = ["youtube.com","youtu.be","instagram.com","tiktok.com","twitter.com","x.com"]
+
 # Loads the .env file and the data inside of it
 
 load_dotenv(".env")
@@ -30,7 +34,6 @@ async def setStatus(statusType, statusName, statusURL):
 
 # Using on_ready() so if the bot runs the user knows its running
 
-bot = commands.Bot(command_prefix=os.getenv("PREFIX"), intents=discord.Intents.all())
 @bot.event
 async def on_ready():
     await setStatus(botStatusType,botStatusName,botStatusURL)
@@ -46,15 +49,24 @@ async def ping(ctx):
 async def ran(ctx, first:int, last:int):
     await ctx.send(f"From {first} to {last}, I choose {random.randint(first,last)}!")
 
-@bot.command(name="download",description="Downloads a video from YouTube/Instagram/Twitter/TikTok")
+@bot.command(name="download",description="Downloads a video")
 async def download(ctx, url):
-    path = await pybalt.download(url, videoQuality='480')
-    if "instagram" in url: await ctx.send("Your Instagram video has been downloaded!",file=discord.File(path))
-    elif "youtube" in url: await ctx.send("Your YouTube video has been downloaded!",file=discord.File(path))
-    elif "x" or "twitter" in url: await ctx.send("Your Twitter video has been downloaded!",file=discord.File(path))
-    elif "tiktok" in url: await ctx.send("Your T witter video has been downloaded!",file=discord.File(path))
-    if os.name == "nt": os.system(f"del {path}") 
-    else: os.system(f"rm {path}")
+    guildUploadLimit = round(ctx.guild.filesize_limit/(1024*1024),2)
+    for pybaltURL in pybaltURLs:
+        if pybaltURL in url:
+            dlPath = await pybalt.download(url, videoQuality='480')
+            try:
+                fileSize = round((os.path.getsize(dlPath)/(1024*1024)),2)
+                if fileSize <= guildUploadLimit:
+                    await ctx.send(f"-# video size: {fileSize} MB",file=discord.File(dlPath))
+                else:
+                    await ctx.send(f"Couldn't upload files bigger than {guildUploadLimit}MB! This will be implemented very soon by using Catbox.")
+            finally:
+                if dlPath and os.path.exists(dlPath):
+                    os.remove(dlPath)
+            return
+    await ctx.send(f"Downloading files from these URLs `{' '.join(pybaltURLs)}` isn't implemented yet!")
+    # DOWNLOADS FOR UNSUPPORTED URLS WILL BE IMPLEMENTED VERY SOON!!!
 
 @bot.command(name="encodeb64",description=f"Encodes a string in Base64")
 async def encodeb64(ctx, *, string):
