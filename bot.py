@@ -30,7 +30,7 @@ async def setStatus(statusType, statusName, statusURL):
     elif statusType == "watching":
         await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name=f"Watching {statusName}"))
     else:
-        print("[!] The status type entry you entered is incorrect or unavailable.")
+        print("[!] The status type entry you entered is incorrect or unwritten.")
 
 # Using on_ready() so if the bot runs the user knows its running
 
